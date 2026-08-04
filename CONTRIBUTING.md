@@ -3,8 +3,8 @@
 Thanks for your interest in contributing! This project is a standalone, portable
 Computer-Use MCP server. Because it can control a user's mouse, keyboard, and
 clipboard, security review matters more than in most projects — please keep the
-security model (kill-switch, app tiers, key blocklist) in mind when proposing
-changes.
+security model (kill-switch, sandbox mode, app tiers, key blocklist) in mind
+when proposing changes.
 
 ## Setup
 

@@ -9,7 +9,11 @@
  * list and `handleToolCall` errors out on every tool.
  */
 
+import { isSandboxMode } from '../sandbox.js'
+
 export function isComputerUseEnabled(): boolean {
+  // Sandbox mode is an explicit escape hatch that bypasses the kill-switch.
+  if (isSandboxMode()) return true
   return (
     process.env.ALLOW_ANT_COMPUTER_USE_MCP === '1' ||
     process.env.ALLOW_ANT_COMPUTER_USE_MCP === 'true'

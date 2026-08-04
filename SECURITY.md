@@ -21,7 +21,18 @@ advisory) as soon as a reasonable patch is ready.
 ## Security design
 
 The server refuses to start unless the kill-switch environment variable
-`ALLOW_ANT_COMPUTER_USE_MCP=1` is explicitly set. Defense in depth:
+`ALLOW_ANT_COMPUTER_USE_MCP=1` is explicitly set (or sandbox mode
+`CCV_SANDBOX_MODE=1` is set). Defense in depth:
+
+- **Kill-switch gate** — server exits if the env var is not set.
+- **Sandbox mode** (`CCV_SANDBOX_MODE=1`) — an explicit, auditable downgrade
+  for sandboxed/containerized environments that elevates ALL permission gates:
+  app tiers → full, system-key blocklist disabled, clipboard/systemKeyCombos
+  flags granted implicitly, cross-process lock skipped. It does NOT bypass
+  macOS TCC permissions, the `request_access` first step, stale-screenshot
+  pixel validation, or HTTP loopback binding. Because it is set via an
+  environment variable, **any local process can enable it** — treat it as an
+  operator decision with full responsibility.
 
 - **Kill-switch gate** — server exits if the env var is not set.
 - **Cross-process file lock** — prevents multiple sessions from controlling the
@@ -41,4 +52,5 @@ The server refuses to start unless the kill-switch environment variable
 - Run inside a container or VM with restricted network access.
 - Do not run on shared workstations.
 - Monitor stderr logs.
-- Never remove the kill-switch gate.
+- Never remove the kill-switch gate. Sandbox mode (`CCV_SANDBOX_MODE=1`) is
+  its only intended exception and is an explicit, documented downgrade.

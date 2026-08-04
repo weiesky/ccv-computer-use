@@ -30,6 +30,8 @@ mouse, keyboard, clipboard, and application management via the
 - **Cross-process file lock**: `ccv-computer-use.lock` prevents concurrent control from multiple sessions
 - **macOS TCC detection**: Accessibility + Screen Recording permission status
 - **Kill-switch**: gated behind the `ALLOW_ANT_COMPUTER_USE_MCP` environment variable
+- **Sandbox mode**: `CCV_SANDBOX_MODE=1` elevates every permission gate for
+  sandboxed/containerized environments (see below)
 - **Pixel validation**: 9×9 patch comparison (sharp/libvips JPEG decode) prevents stale-screenshot clicks
 - **HTTP transport**: Streamable HTTP on localhost with Origin validation (DNS-rebinding protection)
 
@@ -61,7 +63,8 @@ npm install ccv-computer-use        # or as a dependency of your project
 ALLOW_ANT_COMPUTER_USE_MCP=1 npx ccv-computer-use
 ```
 
-The server refuses to start unless the kill-switch environment variable is set.
+The server refuses to start unless the kill-switch environment variable is set
+(or sandbox mode is enabled — see below).
 
 ### 2. Claude Code
 
@@ -110,6 +113,36 @@ Edit `claude_desktop_config.json`:
 Any client that supports stdio MCP servers can run
 `env ALLOW_ANT_COMPUTER_USE_MCP=1 npx ccv-computer-use`. For a programmatic
 integration, see [Programming API](#programming-api).
+
+## Sandbox mode (`CCV_SANDBOX_MODE=1`)
+
+For sandboxed / containerized / VM environments where the full freedom of
+operation is desired, set `CCV_SANDBOX_MODE=1` to run the server with **every
+permission gate elevated** — it also **bypasses the kill-switch**, so
+`ALLOW_ANT_COMPUTER_USE_MCP` is not required:
+
+```bash
+CCV_SANDBOX_MODE=1 npx ccv-computer-use
+```
+
+Sandbox mode elevates:
+
+- **App tiering** — browsers, terminals, and trading apps become `full` control (no read/click restriction).
+- **Policy auto-deny** — streaming / ebook / music apps are no longer blocked.
+- **System-key blocklist** — disabled (`Cmd+Q`, `Ctrl+Alt+Delete`, … are allowed).
+- **Grant flags** — `clipboardRead` / `clipboardWrite` / `systemKeyCombos` are granted implicitly.
+- **Cross-process lock** — skipped (concurrent sessions may drive the machine; operator's responsibility).
+
+Sandbox mode does **NOT** bypass:
+
+- **OS-level permissions** — macOS TCC Accessibility / Screen Recording are still required.
+- **The `request_access` first step** — call it once before controlling apps.
+- **Stale-screenshot pixel validation** — a correctness guard, still active.
+- **HTTP loopback binding** — `--http-host` still refuses non-loopback addresses.
+
+> ⚠️ Sandbox mode is an **explicit, auditable downgrade** of the security model.
+> Use it only in an environment you fully control (a disposable container or
+> VM). Do **not** enable it on a shared workstation.
 
 ## HTTP transport (Streamable HTTP)
 
@@ -318,7 +351,9 @@ debug with the MCP Inspector.
 ## FAQ / Troubleshooting
 
 **Q: The server exits immediately when I run it.**
-A: The kill-switch `ALLOW_ANT_COMPUTER_USE_MCP=1` must be set explicitly.
+A: The kill-switch `ALLOW_ANT_COMPUTER_USE_MCP=1` must be set explicitly —
+or run in [sandbox mode](#sandbox-mode-ccv_sandbox_mode1) with
+`CCV_SANDBOX_MODE=1`.
 
 **Q: Linux shows a black / empty screenshot.**
 A: You need an X11 session (`DISPLAY` set); Wayland is not supported. Verify

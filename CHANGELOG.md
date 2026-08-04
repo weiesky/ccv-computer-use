@@ -6,6 +6,14 @@ and releases are versioned with [Changesets](https://github.com/changesets/chang
 
 ## [Unreleased]
 
+- **Sandbox mode** (`CCV_SANDBOX_MODE=1`): elevates every permission gate for
+  sandboxed/containerized environments — app tiers → full, system-key
+  blocklist disabled, clipboard/systemKeyCombos flags granted implicitly,
+  kill-switch + cross-process lock bypassed. TCC, `request_access`,
+  pixel-validation, and HTTP loopback binding still enforced.
+- `--version` and MCP `serverInfo` now read from `package.json` (no longer a
+  hardcoded upstream version).
+
 ## [0.1.0] - 2026-08-04
 
 Initial public release.

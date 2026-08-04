@@ -26,6 +26,7 @@ import { createStderrLogger } from './host/logger.js'
 import { registerEscapeHotkey } from './server/escHotkey.js'
 import { startHttpServer } from './server/http.js'
 import { isComputerUseEnabled } from './server/killSwitch.js'
+import { isSandboxMode, sandboxNotice } from './sandbox.js'
 import { createInMemorySessionContext } from './server/sessionContext.js'
 import { startStdioServer } from './server/stdio.js'
 import type { CoordinateMode } from './types.js'
@@ -44,6 +45,13 @@ REQUIRED ENVIRONMENT
   ALLOW_ANT_COMPUTER_USE_MCP=1     Must be set to enable the server.
                                    This is a safety gate: the MCP gives full
                                    mouse/keyboard control of this machine.
+  CCV_SANDBOX_MODE=1               ALTERNATIVE: enables the server AND elevates
+                                   all permission gates (app tiers = full,
+                                   system-key blocklist disabled, clipboard/
+                                   systemKeyCombos flags granted, lock skipped).
+                                   For sandboxed/containerized environments
+                                   only. OS permissions (TCC) and HTTP
+                                   loopback binding are still enforced.
 
 OPTIONS
   --help, -h                       Show this help.
@@ -144,13 +152,22 @@ async function main(): Promise<void> {
   )
 
   // ── Kill switch ──────────────────────────────────────────────────────
+  // Sandbox mode bypasses the kill-switch (see sandbox.ts). Note: this is an
+  // explicit operator opt-in for containerized/sandboxed environments; the
+  // loopback-only HTTP bind check below is NOT bypassed.
   if (!isComputerUseEnabled()) {
     process.stderr.write(
       '[ccv-computer-use] ALLOW_ANT_COMPUTER_USE_MCP is not set.\n' +
         'This MCP gives full mouse/keyboard control of the machine and must be\n' +
-        'explicitly enabled. Set ALLOW_ANT_COMPUTER_USE_MCP=1 to proceed.\n',
+        'explicitly enabled. Set ALLOW_ANT_COMPUTER_USE_MCP=1 (or run in\n' +
+        'sandbox mode with CCV_SANDBOX_MODE=1) to proceed.\n',
     )
     process.exit(1)
+  }
+
+  // ── Sandbox mode notice ─────────────────────────────────────────────
+  if (isSandboxMode()) {
+    process.stderr.write(sandboxNotice('ccv-computer-use') + '\n')
   }
 
   // ── Coordinate mode ──────────────────────────────────────────────────

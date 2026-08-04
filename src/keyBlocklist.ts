@@ -103,6 +103,9 @@ function partitionKeys(seq: string): { mods: string[]; keys: string[] } {
  * Normalize "Cmd + Shift + Q" → "shift+meta+q": lowercase, trim, alias →
  * canonical, dedupe, sort modifiers, non-modifiers last.
  */
+
+import { isSandboxMode } from './sandbox.js'
+
 export function normalizeKeySequence(seq: string): string {
   const { mods, keys } = partitionKeys(seq)
   return [...mods, ...keys].join('+')
@@ -125,6 +128,9 @@ export function isSystemKeyCombo(
   seq: string,
   platform: 'darwin' | 'win32',
 ): boolean {
+  // Sandbox mode: system-key blocklist disabled — operator opted into full
+  // freedom in a controlled environment.
+  if (isSandboxMode()) return false
   const blocklist = platform === 'darwin' ? BLOCKED_DARWIN : BLOCKED_WIN32
   const { mods, keys } = partitionKeys(seq)
   const prefix = mods.length > 0 ? mods.join('+') + '+' : ''

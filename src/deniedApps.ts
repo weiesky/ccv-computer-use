@@ -31,6 +31,8 @@
  * duplicated as a string literal below rather than imported.
  */
 
+import { isSandboxMode } from './sandbox.js'
+
 export type DeniedCategory = 'browser' | 'terminal' | 'trading'
 
 /**
@@ -298,6 +300,9 @@ export function isPolicyDenied(
   bundleId: string | undefined,
   displayName: string,
 ): boolean {
+  // Sandbox mode: policy auto-deny is disabled — the operator wants full
+  // freedom in a controlled environment.
+  if (isSandboxMode()) return false
   if (bundleId && POLICY_DENIED_BUNDLE_IDS.has(bundleId)) return true
   const lower = displayName.toLowerCase()
   for (const sub of POLICY_DENIED_NAME_SUBSTRINGS) {
@@ -538,6 +543,9 @@ export function getDefaultTierForApp(
   bundleId: string | undefined,
   displayName: string,
 ): 'read' | 'click' | 'full' {
+  // Sandbox mode: everything is full control — browsers, terminals, and
+  // trading apps are no longer tier-restricted.
+  if (isSandboxMode()) return 'full'
   return categoryToTier(getDeniedCategoryForApp(bundleId, displayName))
 }
 

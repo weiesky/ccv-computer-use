@@ -68,6 +68,7 @@ export {
 } from './deniedApps.js'
 export type { DeniedCategory } from './deniedApps.js'
 export { isSystemKeyCombo, normalizeKeySequence } from './keyBlocklist.js'
+export { isSandboxMode, sandboxNotice } from './sandbox.js'
 
 // ── Image utilities ───────────────────────────────────────────────────
 export { API_RESIZE_PARAMS, targetImageSize } from './imageResize.js'

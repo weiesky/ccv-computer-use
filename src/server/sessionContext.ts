@@ -21,11 +21,22 @@ import type {
   TeachStepResult,
 } from '../types.js'
 import { DEFAULT_GRANT_FLAGS } from '../types.js'
+import { isSandboxMode } from '../sandbox.js'
 import {
   type LockHandle,
   acquireCuLock as acquireFileLock,
   checkCuLock as checkFileLock,
 } from './lock.js'
+
+/** All grant flags elevated — used in sandbox mode so the model can use
+ * clipboard and system-key combos without an explicit `request_access` grant. */
+function allGrantFlags(): CuGrantFlags {
+  return {
+    clipboardRead: true,
+    clipboardWrite: true,
+    systemKeyCombos: true,
+  }
+}
 
 export interface SessionContextOptions {
   sessionId: string
@@ -76,7 +87,9 @@ export function createInMemorySessionContext(
   opts: SessionContextOptions,
 ): InMemorySessionContext {
   const allowedApps = new Map<string, AppGrant>()
-  let grantFlags: CuGrantFlags = { ...DEFAULT_GRANT_FLAGS }
+  let grantFlags: CuGrantFlags = isSandboxMode()
+    ? allGrantFlags()
+    : { ...DEFAULT_GRANT_FLAGS }
   let selectedDisplayId: number | undefined
   let lastScreenshotDims: ScreenshotDims | undefined
   // Teach mode state. Without a GUI overlay there is no Next button, so
@@ -170,7 +183,9 @@ export function createInMemorySessionContext(
       return {
         granted,
         denied,
-        flags: { ...DEFAULT_GRANT_FLAGS, ...req.requestedFlags },
+        flags: isSandboxMode()
+          ? allGrantFlags()
+          : { ...DEFAULT_GRANT_FLAGS, ...req.requestedFlags },
         userConsented: true,
       }
     },
@@ -240,8 +255,9 @@ export function createInMemorySessionContext(
       return {
         granted,
         denied,
-        // Teach mode does not surface grant flags — preserve the defaults.
-        flags: { ...DEFAULT_GRANT_FLAGS },
+        // Teach mode does not surface grant flags — preserve the defaults
+        // (or elevate everything in sandbox mode).
+        flags: isSandboxMode() ? allGrantFlags() : { ...DEFAULT_GRANT_FLAGS },
         // Standalone host has no dialog; treat the auto-approval as consent.
         userConsented: true,
       }
@@ -290,7 +306,11 @@ export function createInMemorySessionContext(
     },
 
     // ── Lock (async, file-backed) ────────────────────────────────────
+    // Sandbox mode: cross-process lock skipped so multiple sessions may drive
+    // the machine concurrently — operator's responsibility (same caveat as
+    // `--no-lock`).
     async checkCuLock() {
+      if (isSandboxMode()) return { holder: undefined, isSelf: false }
       const result = await checkFileLock(opts.lockPath)
       if (result.kind === 'free') return { holder: undefined, isSelf: false }
       if (result.kind === 'held_by_self') {
@@ -300,6 +320,7 @@ export function createInMemorySessionContext(
     },
 
     async acquireCuLock() {
+      if (isSandboxMode()) return
       const result = await acquireFileLock(opts.sessionId, opts.lockPath)
       if ('blocked' in result) {
         throw new Error(`computer-use lock held by ${result.blocked}`)

@@ -17,6 +17,7 @@
  *   is the same either way.
  */
 
+import { createRequire } from 'node:module'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
 import {
@@ -259,8 +260,22 @@ export function createComputerUseMcpServer(
 ): Server {
   const { serverName, logger } = adapter
 
+  // Read version from package.json so MCP serverInfo stays in sync with
+  // releases (changesets bumps package.json, not this file).
+  let pkgVersion = '0.0.0'
+  try {
+    pkgVersion =
+      (
+        createRequire(import.meta.url)('../package.json') as {
+          version: string
+        }
+      ).version ?? '0.0.0'
+  } catch {
+    // package.json absent (e.g. source checkout) — fall back to placeholder.
+  }
+
   const server = new Server(
-    { name: serverName, version: '2.1.220' },
+    { name: serverName, version: pkgVersion },
     { capabilities: { tools: {}, logging: {} } },
   )
 
