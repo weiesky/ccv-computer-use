@@ -1,6 +1,6 @@
 {
   "name": "ccv-computer-use",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Standalone, portable Computer-Use MCP server. Cross-platform screenshot, mouse, keyboard, clipboard, and application management via the Model Context Protocol.",
   "license": "Apache-2.0",
   "type": "module",

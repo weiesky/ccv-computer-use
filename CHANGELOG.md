@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- 5a700ac: Add sandbox mode (`CCV_SANDBOX_MODE=1`): an explicit operator opt-in for sandboxed/containerized environments that elevates all permission gates — app tiers become full, the system-key blocklist is disabled, clipboard/systemKeyCombos grant flags are granted implicitly, the kill-switch and the cross-process lock are bypassed. OS-level permissions (TCC), the `request_access` first step, stale-screenshot pixel validation, and HTTP loopback binding remain enforced. See README "Sandbox mode" for details.
+
 All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and releases are versioned with [Changesets](https://github.com/changesets/changesets).
