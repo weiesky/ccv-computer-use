@@ -1,0 +1,61 @@
+{
+  "name": "cc-computer-use",
+  "version": "2.1.220",
+  "description": "Standalone portable Computer-Use MCP server (extracted from Claude Code 2.1.220), renamed cc-computer-use to avoid colliding with Claude Code's built-in computer-use server. Cross-platform screenshot, mouse, keyboard, clipboard, application management via Model Context Protocol.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "cc-computer-use": "./bin/cc-computer-use.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./cli": "./dist/cli.js",
+    "./types": "./dist/types.d.ts",
+    "./executor": "./dist/executor.d.ts"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "darwin",
+    "win32",
+    "linux"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "node-global-key-listener": "^0.3.0",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "computer-use",
+    "screenshot",
+    "automation",
+    "claude"
+  ]
+}
