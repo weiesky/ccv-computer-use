@@ -40,7 +40,7 @@ npm install -g ccv-computer-use     # global, exposes the `ccv-computer-use` bin
 npm install ccv-computer-use        # or as a dependency of your project
 ```
 
-> Requires **Node.js 18+**. On first install, `sharp` downloads its prebuilt
+> Requires **Node.js 22+**. On first install, `sharp` downloads its prebuilt
 > libvips binary for your platform automatically — no system-level install
 > needed. Only exotic architectures (Alpine/musl, riscv64) require manual
 > compilation — see the [sharp install docs](https://sharp.pixelplumbing.com/install).

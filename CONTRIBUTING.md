@@ -14,7 +14,7 @@ cd ccv-computer-use
 npm ci
 ```
 
-Node.js 18+ is required (`.nvmrc` pins 20 for development).
+Node.js 22+ is required (see `.nvmrc`).
 
 ## Development
 
