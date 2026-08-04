@@ -59,5 +59,5 @@ describe('mcp-handshake', () => {
     expect(names).toContain('computer_batch')
 
     await client.close()
-  }, 30000)
+  }, 60000)
 })

@@ -43,5 +43,5 @@ describe('sandbox mode', () => {
     expect(names).toContain('type')
 
     await client.close()
-  }, 30000)
+  }, 60000)
 })

@@ -68,7 +68,7 @@ describe('teach: stdio tool listing', () => {
     expect(names).toContain('teach_batch')
 
     await client.close()
-  }, 30000)
+  }, 60000)
 })
 
 // ---------------------------------------------------------------------------

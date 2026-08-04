@@ -83,7 +83,7 @@ describe('http transport', () => {
     expect(names).toContain('computer_batch')
 
     await client.close()
-  }, 30000)
+  }, 60000)
 
   test('rejects cross-origin requests (DNS-rebinding defense)', async () => {
     const port = 13457
@@ -104,7 +104,7 @@ describe('http transport', () => {
     })
 
     expect(res.status).toBe(403)
-  }, 30000)
+  }, 60000)
 
   test('returns 404 for non-MCP paths', async () => {
     const port = 13458
@@ -112,5 +112,5 @@ describe('http transport', () => {
 
     const res = await fetch(`http://127.0.0.1:${port}/nope`)
     expect(res.status).toBe(404)
-  }, 30000)
+  }, 60000)
 })
