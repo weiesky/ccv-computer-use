@@ -4,3 +4,13 @@ dist/
 .DS_Store
 coverage/
 .vitest/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+*.tgz
+npm-debug.log*
+yarn-error.log
+.claude/

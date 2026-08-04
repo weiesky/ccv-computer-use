@@ -29,7 +29,7 @@ import {
 
 export interface SessionContextOptions {
   sessionId: string
-  /** Override the default `os.tmpdir()/cc-computer-use.lock` path (testing). */
+  /** Override the default `os.tmpdir()/ccv-computer-use.lock` path (testing). */
   lockPath?: string
   /**
    * Decide whether an app grant is auto-approved. Defaults to "approve

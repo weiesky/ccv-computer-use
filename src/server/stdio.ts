@@ -12,5 +12,5 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 export async function startStdioServer(server: Server): Promise<void> {
   const transport = new StdioServerTransport()
   await server.connect(transport)
-  process.stderr.write('[cc-computer-use] stdio server started\n')
+  process.stderr.write('[ccv-computer-use] stdio server started\n')
 }

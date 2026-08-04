@@ -40,7 +40,7 @@ export function registerEscapeHotkey(
     opts.onError ??
     ((err: unknown) => {
       process.stderr.write(
-        `[cc-computer-use] ESC hotkey unavailable: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[ccv-computer-use] ESC hotkey unavailable: ${err instanceof Error ? err.message : String(err)}\n`,
       )
     })
 

@@ -1,21 +1,22 @@
 /**
- * cc-computer-use CLI entry point.
+ * ccv-computer-use CLI entry point.
  *
  * Starts the computer-use MCP server on either stdio (default) or Streamable
  * HTTP.
  *
  * Usage:
- *   cc-computer-use                              # stdio MCP server (requires ALLOW_ANT_COMPUTER_USE_MCP=1)
- *   cc-computer-use --http 3456                  # Streamable HTTP on 127.0.0.1:3456/mcp
- *   cc-computer-use --esc-hotkey                 # stdio + global ESC abort hotkey
- *   cc-computer-use --help
- *   cc-computer-use --version
- *   cc-computer-use --coordinate-mode pixels     # or normalized_0_100
- *   cc-computer-use --no-lock                    # skip cross-process file lock (testing only)
- *   cc-computer-use --teach-auto-advance         # auto-advance every teach_step (headless default)
+ *   ccv-computer-use                              # stdio MCP server (requires ALLOW_ANT_COMPUTER_USE_MCP=1)
+ *   ccv-computer-use --http 3456                  # Streamable HTTP on 127.0.0.1:3456/mcp
+ *   ccv-computer-use --esc-hotkey                 # stdio + global ESC abort hotkey
+ *   ccv-computer-use --help
+ *   ccv-computer-use --version
+ *   ccv-computer-use --coordinate-mode pixels     # or normalized_0_100
+ *   ccv-computer-use --no-lock                    # skip cross-process file lock (testing only)
+ *   ccv-computer-use --teach-auto-advance         # auto-advance every teach_step (headless default)
  */
 
 import { randomUUID } from 'node:crypto'
+import { createRequire } from 'node:module'
 import { parseArgs } from 'node:util'
 
 import { createComputerUseMcpServer } from './mcpServer.js'
@@ -29,13 +30,15 @@ import { createInMemorySessionContext } from './server/sessionContext.js'
 import { startStdioServer } from './server/stdio.js'
 import type { CoordinateMode } from './types.js'
 
-const VERSION = '2.1.220'
+// Read the version from package.json so `--version` stays in sync with
+// releases (changesets bumps package.json, not this file).
+const { version: VERSION } = createRequire(import.meta.url)('../package.json') as { version: string }
 
 const HELP = `
-cc-computer-use — standalone Computer-Use MCP server
+ccv-computer-use — standalone Computer-Use MCP server
 
 USAGE
-  cc-computer-use [options]
+  ccv-computer-use [options]
 
 REQUIRED ENVIRONMENT
   ALLOW_ANT_COMPUTER_USE_MCP=1     Must be set to enable the server.
@@ -84,17 +87,17 @@ USER-INTERRUPT
 
 EXAMPLES
   # Start stdio server (most MCP clients spawn it directly)
-  ALLOW_ANT_COMPUTER_USE_MCP=1 cc-computer-use
+  ALLOW_ANT_COMPUTER_USE_MCP=1 ccv-computer-use
 
   # Start HTTP server on localhost:3456
-  ALLOW_ANT_COMPUTER_USE_MCP=1 cc-computer-use --http 3456
+  ALLOW_ANT_COMPUTER_USE_MCP=1 ccv-computer-use --http 3456
 
   # Stdio + ESC abort hotkey
-  ALLOW_ANT_COMPUTER_USE_MCP=1 cc-computer-use --esc-hotkey
+  ALLOW_ANT_COMPUTER_USE_MCP=1 ccv-computer-use --esc-hotkey
 
   # Register with Claude Code
-  claude mcp add cc-computer-use --transport stdio -- \\
-    env ALLOW_ANT_COMPUTER_USE_MCP=1 cc-computer-use
+  claude mcp add ccv-computer-use --transport stdio -- \\
+    env ALLOW_ANT_COMPUTER_USE_MCP=1 ccv-computer-use
 
 PLATFORMS
   macOS   — requires Accessibility + Screen Recording permissions granted
@@ -136,14 +139,14 @@ async function main(): Promise<void> {
   }
 
   const logger = createStderrLogger(
-    'cc-computer-use',
+    'ccv-computer-use',
     (values['log-level'] ?? 'info') as 'silly' | 'debug' | 'info' | 'warn' | 'error',
   )
 
   // ── Kill switch ──────────────────────────────────────────────────────
   if (!isComputerUseEnabled()) {
     process.stderr.write(
-      '[cc-computer-use] ALLOW_ANT_COMPUTER_USE_MCP is not set.\n' +
+      '[ccv-computer-use] ALLOW_ANT_COMPUTER_USE_MCP is not set.\n' +
         'This MCP gives full mouse/keyboard control of the machine and must be\n' +
         'explicitly enabled. Set ALLOW_ANT_COMPUTER_USE_MCP=1 to proceed.\n',
     )
@@ -154,7 +157,7 @@ async function main(): Promise<void> {
   const coordModeRaw = values['coordinate-mode'] ?? 'pixels'
   if (coordModeRaw !== 'pixels' && coordModeRaw !== 'normalized_0_100') {
     process.stderr.write(
-      `[cc-computer-use] invalid --coordinate-mode "${coordModeRaw}" (expected "pixels" or "normalized_0_100")\n`,
+      `[ccv-computer-use] invalid --coordinate-mode "${coordModeRaw}" (expected "pixels" or "normalized_0_100")\n`,
     )
     process.exit(1)
   }
@@ -167,7 +170,7 @@ async function main(): Promise<void> {
     const parsed = Number.parseInt(httpPortRaw, 10)
     if (!Number.isFinite(parsed) || parsed <= 0 || parsed > 65535) {
       process.stderr.write(
-        `[cc-computer-use] invalid --http port "${httpPortRaw}" (expected 1-65535)\n`,
+        `[ccv-computer-use] invalid --http port "${httpPortRaw}" (expected 1-65535)\n`,
       )
       process.exit(1)
     }
@@ -187,7 +190,7 @@ async function main(): Promise<void> {
     !httpHost.startsWith('127.')
   ) {
     process.stderr.write(
-      `[cc-computer-use] refusing to bind --http-host "${httpHost}". ` +
+      `[ccv-computer-use] refusing to bind --http-host "${httpHost}". ` +
         'computer-use must listen on localhost; binding a public interface ' +
         'exposes mouse/keyboard control to the network.\n',
     )
@@ -198,7 +201,7 @@ async function main(): Promise<void> {
   // ── Build server ─────────────────────────────────────────────────────
   const executor = createDefaultExecutor()
   const adapter = createStandaloneAdapter({
-    serverName: 'cc-computer-use',
+    serverName: 'ccv-computer-use',
     executor,
     logLevel: values['log-level'] as 'debug' | 'info' | 'warn' | 'error' | undefined,
   })
@@ -206,7 +209,7 @@ async function main(): Promise<void> {
   const sessionId = randomUUID()
   const sessionContext = createInMemorySessionContext({
     sessionId,
-    lockPath: values['no-lock'] ? '/dev/null/cc-computer-use.lock.skip' : undefined,
+    lockPath: values['no-lock'] ? '/dev/null/ccv-computer-use.lock.skip' : undefined,
     // No GUI overlay: teach_step blocks indefinitely without auto-advance,
     // so the CLI ships with auto-advance ON by default. The flag is still
     // exposed so a future GUI host (or a test harness) can flip it off
@@ -277,7 +280,7 @@ async function main(): Promise<void> {
 
 main().catch(err => {
   process.stderr.write(
-    `[cc-computer-use] fatal: ${err instanceof Error ? err.stack ?? err.message : String(err)}\n`,
+    `[ccv-computer-use] fatal: ${err instanceof Error ? err.stack ?? err.message : String(err)}\n`,
   )
   process.exit(1)
 })

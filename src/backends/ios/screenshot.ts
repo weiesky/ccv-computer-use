@@ -56,7 +56,7 @@ function jpegDims(buf: Buffer): { width: number; height: number } | null {
 function captureOne(udid: string, format: 'jpeg' | 'png'): IOSScreenshotResult {
   const path = join(
     tmpdir(),
-    `cc-computer-use-ios-${randomUUID()}.${format === 'jpeg' ? 'jpg' : 'png'}`,
+    `ccv-computer-use-ios-${randomUUID()}.${format === 'jpeg' ? 'jpg' : 'png'}`,
   )
   try {
     runSync([

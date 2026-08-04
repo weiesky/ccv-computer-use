@@ -31,7 +31,7 @@ import { createStderrLogger } from './logger.js'
 import { checkTccState } from './tcc.js'
 
 export interface AdapterOptions {
-  /** Server name shown in logs and MCP `serverInfo`. Defaults to "cc-computer-use". */
+  /** Server name shown in logs and MCP `serverInfo`. Defaults to "ccv-computer-use". */
   serverName?: string
   /** Platform executor (darwin/win32/linux). Constructed by the CLI entry. */
   executor: ComputerExecutor
@@ -41,7 +41,7 @@ export interface AdapterOptions {
 export function createStandaloneAdapter(
   opts: AdapterOptions,
 ): ComputerUseHostAdapter {
-  const serverName = opts.serverName ?? 'cc-computer-use'
+  const serverName = opts.serverName ?? 'ccv-computer-use'
   const logger = createStderrLogger(serverName, opts.logLevel ?? 'info')
 
   return {

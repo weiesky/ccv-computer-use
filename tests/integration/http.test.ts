@@ -47,12 +47,12 @@ describe('http transport', () => {
 
   async function startServer(port: number) {
     const adapter = createStandaloneAdapter({
-      serverName: 'cc-computer-use-test',
+      serverName: 'ccv-computer-use-test',
       executor: stubExecutor,
     })
     const sessionContext = createInMemorySessionContext({
       sessionId: randomUUID(),
-      lockPath: '/dev/null/cc-computer-use.test.lock.skip',
+      lockPath: '/dev/null/ccv-computer-use.test.lock.skip',
     })
     const server = createComputerUseMcpServer(adapter, 'pixels', sessionContext)
     close = await startHttpServer(server, { port, host: '127.0.0.1', path: '/mcp' })

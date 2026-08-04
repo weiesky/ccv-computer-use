@@ -6,7 +6,7 @@
  * time; sessions that lose the race get a `blocked` result and surface the
  * holder's session ID to the model.
  *
- * The lock file lives at `os.tmpdir()/cc-computer-use.lock` and is a JSON payload
+ * The lock file lives at `os.tmpdir()/ccv-computer-use.lock` and is a JSON payload
  * `{sessionId, pid, acquiredAt}`. Heartbeat is mtime-touched every 5s so a
  * future "abandoned lock" sweeper can distinguish live locks from stale ones
  * even when the holder's PID has been recycled.
@@ -34,7 +34,7 @@ interface LockPayload {
 }
 
 function defaultLockPath(): string {
-  return path.join(os.tmpdir(), 'cc-computer-use.lock')
+  return path.join(os.tmpdir(), 'ccv-computer-use.lock')
 }
 
 function isErrnoException(e: unknown, code: string): boolean {
@@ -142,7 +142,7 @@ export async function acquireCuLock(
     const existing = await readLockPayload(lockPath)
     if (existing && !isProcessAlive(existing.pid)) {
       process.stderr.write(
-        `Recovering stale cc-computer-use lock from session ${existing.sessionId} (PID ${existing.pid})\n`,
+        `Recovering stale ccv-computer-use lock from session ${existing.sessionId} (PID ${existing.pid})\n`,
       )
       try {
         await fs.unlink(lockPath)
@@ -175,7 +175,7 @@ export async function acquireCuLock(
       clearInterval(heartbeat)
       try {
         await fs.unlink(lockPath)
-        process.stderr.write('Released cc-computer-use lock\n')
+        process.stderr.write('Released ccv-computer-use lock\n')
       } catch {
         // Already gone — fine.
       }

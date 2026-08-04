@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  # Manual trigger: publishes the current package.json version directly.
+  # Use this for the initial release (e.g. 0.1.0) once OIDC trusted
+  # publishing is configured on npmjs.com. Subsequent releases go through
+  # the changesets "Version Packages" PR flow.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  version:
+    if: github.repository_owner == 'weiesky'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Create/update "Version Packages" PR
+        uses: changesets/action@v1
+        with:
+          version: npx changeset version
+          commit: "chore: version packages"
+          title: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    if: github.repository_owner == 'weiesky'
+    needs: version
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      # OIDC trusted publishing requires npm >= 11.5.1
+      - run: npm install -g npm@11.5.1
+      - run: npm ci
+      - run: npm run build
+      # Do NOT set NODE_AUTH_TOKEN or registry-url here — they would override
+      # OIDC trusted publishing. `npm publish` uses the OIDC id-token granted
+      # by the `release` environment (id-token: write above).
+      - name: Publish to npm
+        env:
+          NPM_CONFIG_PROVENANCE: 'true'
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            npm publish
+          else
+            npx changeset publish
+          fi

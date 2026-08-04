@@ -73,7 +73,7 @@ export async function startHttpServer(
     opts.onError ??
     ((err: unknown) => {
       process.stderr.write(
-        `[cc-computer-use] http transport error: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[ccv-computer-use] http transport error: ${err instanceof Error ? err.message : String(err)}\n`,
       )
     })
 
@@ -130,7 +130,7 @@ export async function startHttpServer(
   })
 
   process.stderr.write(
-    `[cc-computer-use] HTTP server listening on http://${host}:${opts.port}${path}\n`,
+    `[ccv-computer-use] HTTP server listening on http://${host}:${opts.port}${path}\n`,
   )
 
   return async () => {

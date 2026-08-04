@@ -37,7 +37,7 @@ const TSX = join(__dirname, '..', '..', 'node_modules', '.bin', 'tsx')
 /** Per-test unique lock path so concurrent test files don't race on the lock. */
 function freshLockPath(): string {
   const dir = mkdtempSync(join(tmpdir(), 'cu-teach-test-'))
-  return join(dir, 'cc-computer-use.lock')
+  return join(dir, 'ccv-computer-use.lock')
 }
 
 // ---------------------------------------------------------------------------
@@ -190,7 +190,7 @@ describe('teach: in-memory flow', () => {
   test('request_teach_access → teach_step → teach_batch', async () => {
     const executor = createMockExecutor()
     const adapter = createStandaloneAdapter({
-      serverName: 'cc-computer-use-test',
+      serverName: 'ccv-computer-use-test',
       executor,
       logLevel: 'error', // keep stderr quiet in tests
     })
@@ -291,7 +291,7 @@ describe('teach: in-memory flow', () => {
   test('teach_step returns teach_mode_not_active when teach never started', async () => {
     const executor = createMockExecutor()
     const adapter = createStandaloneAdapter({
-      serverName: 'cc-computer-use-test',
+      serverName: 'ccv-computer-use-test',
       executor,
       logLevel: 'error',
     })

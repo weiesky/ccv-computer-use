@@ -1,8 +1,8 @@
 /**
- * cc-computer-use — standalone Computer-Use MCP server.
+ * ccv-computer-use — standalone Computer-Use MCP server.
  *
  * Public API surface:
- *   - Tool schemas + handlers (re-exported from cc-computer-use core)
+ *   - Tool schemas + handlers (re-exported from ccv-computer-use core)
  *   - ComputerExecutor interface + default factory
  *   - HostAdapter (standalone, no-GUI) factory
  *   - SessionContext (in-memory) factory
@@ -123,4 +123,4 @@ export { registerEscapeHotkey } from './server/escHotkey.js'
 export type { EscapeHotkeyOptions } from './server/escHotkey.js'
 
 // ── System prompt snippet (for hosts to inject) ───────────────────────
-export const SYSTEM_PROMPT_SNIPPET = `You have a computer-use MCP available (tools named \`mcp__cc-computer-use__*\`). It lets you take screenshots of the user's desktop and control it with mouse clicks, keyboard input, and scrolling. Before any computer-use tool call, you MUST first call \`mcp__cc-computer-use__request_access\` to obtain permission from the user.`
+export const SYSTEM_PROMPT_SNIPPET = `You have a computer-use MCP available (tools named \`mcp__ccv-computer-use__*\`). It lets you take screenshots of the user's desktop and control it with mouse clicks, keyboard input, and scrolling. Before any computer-use tool call, you MUST first call \`mcp__ccv-computer-use__request_access\` to obtain permission from the user.`

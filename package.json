@@ -1,22 +1,28 @@
 {
-  "name": "cc-computer-use",
-  "version": "2.1.220",
-  "description": "Standalone portable Computer-Use MCP server (extracted from Claude Code 2.1.220), renamed cc-computer-use to avoid colliding with Claude Code's built-in computer-use server. Cross-platform screenshot, mouse, keyboard, clipboard, application management via Model Context Protocol.",
+  "name": "ccv-computer-use",
+  "version": "0.1.0",
+  "description": "Standalone, portable Computer-Use MCP server. Cross-platform screenshot, mouse, keyboard, clipboard, and application management via the Model Context Protocol.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "cc-computer-use": "./bin/cc-computer-use.js"
+    "ccv-computer-use": "./bin/ccv-computer-use.js"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./cli": "./dist/cli.js",
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "default": "./dist/cli.js"
+    },
     "./types": "./dist/types.d.ts",
-    "./executor": "./dist/executor.d.ts"
+    "./executor": {
+      "types": "./dist/executor.d.ts",
+      "default": "./dist/executor.js"
+    }
   },
   "files": [
     "bin",
@@ -32,12 +38,25 @@
     "win32",
     "linux"
   ],
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weiesky/ccv-computer-use.git"
+  },
+  "homepage": "https://github.com/weiesky/ccv-computer-use",
+  "bugs": {
+    "url": "https://github.com/weiesky/ccv-computer-use/issues"
+  },
+  "author": "weiesky",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsx src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepack": "npm run build",
+    "prepare": "npm run build",
+    "changeset": "changeset"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -45,6 +64,7 @@
     "sharp": "^0.35.3"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.0",
     "@types/node": "^20.0.0",
     "tsx": "^4.0.0",
     "typescript": "^5.4.0",

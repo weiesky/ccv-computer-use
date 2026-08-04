@@ -289,7 +289,7 @@ function scaleCoord(
   // Cold start: model sent pixel coords without having taken a screenshot.
   // Degenerate — fall back to the old /sf behavior and warn.
   logger.warn(
-    '[cc-computer-use] pixels-mode coordinate received with no prior screenshot; ' +
+    '[ccv-computer-use] pixels-mode coordinate received with no prior screenshot; ' +
       'falling back to /scaleFactor. Click may be off if downsample is active.',
   )
   return {
